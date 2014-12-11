@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from blessings import Terminal
+
 import numpy as np
 
 from sklearn.metrics import precision_score
@@ -11,11 +13,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 
+t = Terminal()
+
 dataset = np.genfromtxt('car.data', delimiter=',', dtype=None)
 
 n_samples = dataset.shape[0]
 n_features = dataset.shape[1]
-print("Car Evaluation dataset: %d amostras(%d características)" % (dataset.shape[0], n_features))
+print(t.blue("Car Evaluation dataset: %d amostras(%d características)" % (dataset.shape[0], n_features)))
 
 target = dataset[:,-1]
 dataset = dataset[:,0:-1]
@@ -37,26 +41,36 @@ for idx in range(0, n_features-1):
 
 dataset = dataset.astype(np.int32)
 
-def get_indexes_feature_equals(idx_feature, value, rows=np.newaxis):
-	x  = labels_encoders[idx_feature].transform([value])[0]
-	if rows == None:
-		return np.where(dataset[rows:,idx_feature] == x)[0]
-	return np.where(dataset[rows,idx_feature] == x)[0]
+def get_indexes_feature_equals(values_dict):
+	rows = np.arange(len(dataset))
+	for idx_feature, value in values_dict.items():
+		x  = labels_encoders[idx_feature].transform([value])[0]
+		rows = np.where(dataset[rows,idx_feature] == x)[0]
+	return rows
 	
+def get_probability(value, given_value={}):
+	d = dict(list(value.items()) + list(given_value.items()))
+	return float(len(get_indexes_feature_equals(d)))/len(get_indexes_feature_equals(given_value))
 
-x1medIdxs = get_indexes_feature_equals(0, 'med')
-x1medCount = len(x1medIdxs)
-print("P(x1=med) = %0.2f" % (float(x1medCount)/n_samples))
+print(t.green("1.A"))
+print("P(x1=med) = %0.2f" % get_probability({0: 'med'}))
 
-x2lowIdxs = get_indexes_feature_equals(1, 'low')
-x2lowCount = len(x2lowIdxs)
-print("P(x2=low) = %0.2f" % (float(x2lowCount)/n_samples))
+print("P(x2=low) = %0.2f" % get_probability({1: 'low'}))
 
-x3is2Idxs = get_indexes_feature_equals(2, '2')
-#print(x3is2Idxs)
-x6HighIdxs = get_indexes_feature_equals(5, 'high', x3is2Idxs)
-#print(x6HighIdxs)
-print("P(x6=high|x3=2) = %0.2f" % (float(len(x6HighIdxs))/len(x3is2Idxs)))
+print(t.green("1.B"))
+
+print("P(x6=high|x3=2) = %0.2f" % get_probability({5: 'high'}, {2: '2'}))
+print("P(x2=low|x4=4) = %0.2f" % get_probability({1: 'low'}, {3: '4'}))
+
+print(t.green("1.C"))
+
+print("P(x1=low|x2=low,X5=small) = %0.2f" % get_probability({0: 'low'}, {1: 'low', 4: 'small'}))
+print("P(x4=4|x1=med,x3=2) = %0.2f" % get_probability({3: '4'}, {0: 'med', 2: '2'}))
+
+print(t.green("1.D"))
+
+print("P(x2= vhigh,x3=2|x4=2) = %0.2f" % get_probability({1: 'vhigh'}, {2: '2', 3: '2'}))
+print("P(x3=4,x5=med|x1=med) = %0.2f" % get_probability({2: '4', 4: 'med'}, {0: 'med'}))
 
 enc=OneHotEncoder(sparse=False)
 dataset = enc.fit_transform(dataset)
