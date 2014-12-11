@@ -5,6 +5,8 @@ from blessings import Terminal
 
 import numpy as np
 
+from scipy import stats
+
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import accuracy_score
@@ -72,9 +74,19 @@ print(t.green("1.D"))
 print("P(x2= vhigh,x3=2|x4=2) = %0.2f" % get_probability({1: 'vhigh'}, {2: '2', 3: '2'}))
 print("P(x3=4,x5=med|x1=med) = %0.2f" % get_probability({2: '4', 4: 'med'}, {0: 'med'}))
 
-enc=OneHotEncoder(sparse=False)
-dataset = enc.fit_transform(dataset)
-print(enc.active_features_)
-print(enc.feature_indices_)
+
+
+print(t.green("2.A"))
+p_c1  = stats.norm.pdf(9, 6, 1) * 0.4
+p_c2 = stats.norm.pdf(9, 8, 2) * 0.35
+p_c3 = stats.norm.pdf(9, 12, 4) * 0.25
+p_9 = p_c1 + p_c2 + p_c3
+print("Probabilidade: C1 = %0.3f, C2 = %0.3f, C3 = %0.3f" % (p_c1/p_9, p_c2/p_9, p_c3/p_9))
+
+print(t.green("2.B"))
+p_c1  = stats.norm.pdf(9, 6, 1) * 0.4
+p_c3 = stats.norm.pdf(9, 12, 4) * 0.25
+p_9 = p_c1 + p_c3
+print("Probabilidade: C1 = %0.3f, C3 = %0.3f" % (p_c1/p_9, p_c3/p_9))
 
 #print(dataset)
