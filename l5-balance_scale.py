@@ -13,10 +13,10 @@ from sklearn.naive_bayes import MultinomialNB
 t = Terminal()
 
 dataset = np.genfromtxt('balance-scale.data', delimiter=',', dtype=str)
-print(len(dataset))
+#print(len(dataset))
 n_samples = dataset.shape[0]
 n_features = dataset.shape[1]
-print(t.blue("Car Evaluation dataset: %d amostras(%d características)" % (dataset.shape[0], n_features)))
+print(t.blue("Balance Scale dataset: %d amostras(%d características)" % (dataset.shape[0], n_features)))
 
 def get_indexes_feature_equals(values_dict, rows = np.arange(len(dataset))):
 	idxs = rows
@@ -62,12 +62,12 @@ for train_indexes, test_indexes in hold_out:
 	#print(y_pred)
 	accuracy_test = accuracy_score(dataset[test_indexes,0], y_pred)
 	accuracy_array += [accuracy_test]
-print("MEU NaiveBayes (Discreto): Acurácia (Média/Desvio Padrão): %0.2f/%0.2f" % (np.mean(accuracy_array), np.std(accuracy_array)))
+#print("MEU NaiveBayes (Discreto): Acurácia (Média/Desvio Padrão): %0.2f/%0.2f" % (np.mean(accuracy_array), np.std(accuracy_array)))
 
 target = dataset[:,0]
 dataset = dataset[:,1:].astype(np.int32)
 
-print(np.unique(dataset[:,]))
+#print(np.unique(dataset[:,]))
 
 print(t.green("3.A"))
 hold_out = cross_validation.ShuffleSplit(n_samples, n_iter=10, test_size=.25)
@@ -116,7 +116,9 @@ print("NaiveBayes (Discreto+Suavizado): Acurácia (Média/Desvio Padrão): %0.2f
 
 
 exit()
-print(dataset[0])
+
+## Testes abaixo
+#print(dataset[0])
 
 
 pe = get_probability({1: '1'}) * get_probability({2: '5'}) * get_probability({3: '4'}) * get_probability({4: '2'})
